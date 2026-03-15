@@ -20,6 +20,13 @@ Ky projekt është një sistem për menaxhimin e parkingut inteligjent.
 - Llogaritja automatike e pagesës
 - Shfaqja e vendeve të lira
 
+## Si të ekzekutohet projekti
+
+1. Shkarko ose klono projektin nga GitHub
+2. Hap folderin e projektit në Visual Studio Code
+3. Hap file `index.html`
+4. Kliko **Open with Live Server** ose hape direkt në browsers
+
 Autori:
 Selma Avdiu
 Universiteti "Isa Boletini"
