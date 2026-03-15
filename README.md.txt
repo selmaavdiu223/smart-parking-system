@@ -12,6 +12,14 @@ Ky projekt është një sistem për menaxhimin e parkingut inteligjent.
 - C#
 - SQL Server
 
+## Funksionalitetet
+
+- Login për Admin dhe Staff
+- Regjistrimi i hyrjes së veturës
+- Regjistrimi i daljes së veturës
+- Llogaritja automatike e pagesës
+- Shfaqja e vendeve të lira
+
 Autori:
 Selma Avdiu
 Universiteti "Isa Boletini"
