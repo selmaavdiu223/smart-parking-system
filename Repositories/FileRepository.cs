@@ -9,66 +9,118 @@ namespace SmartParkingSystem.Repositories
 
         public List<ParkingSpot> GetAll()
         {
-            if (!File.Exists(_filePath))
-                return new List<ParkingSpot>();
-
-            var lines = File.ReadAllLines(_filePath);
-
-            return lines.Select(line =>
+            try
             {
-                var parts = line.Split(',');
-
-                return new ParkingSpot
+                if (!File.Exists(_filePath))
                 {
-                    Id = int.Parse(parts[0]),
-                    Name = parts[1],
-                    PricePerHour = double.Parse(parts[2], CultureInfo.InvariantCulture),
-                    IsAvailable = bool.Parse(parts[3])
-                };
-            }).ToList();
+                    Console.WriteLine("File nuk u gjet, po krijoj file të ri...");
+                    File.Create(_filePath).Close();
+                    return new List<ParkingSpot>();
+                }
+
+                var lines = File.ReadAllLines(_filePath);
+
+                return lines.Select(line =>
+                {
+                    var parts = line.Split(',');
+
+                    return new ParkingSpot
+                    {
+                        Id = int.Parse(parts[0]),
+                        Name = parts[1],
+                        PricePerHour = double.Parse(parts[2], CultureInfo.InvariantCulture),
+                        IsAvailable = bool.Parse(parts[3])
+                    };
+                }).ToList();
+            }
+            catch
+            {
+                Console.WriteLine("Gabim gjatë leximit të file.");
+                return new List<ParkingSpot>();
+            }
         }
 
-        public ParkingSpot GetById(int id)
+        public ParkingSpot? GetById(int id)
         {
-            return GetAll().FirstOrDefault(x => x.Id == id);
+            try
+            {
+                return GetAll().FirstOrDefault(x => x.Id == id);
+            }
+            catch
+            {
+                Console.WriteLine("Gabim gjatë kërkimit me ID.");
+                return null;
+            }
         }
 
         public void Add(ParkingSpot spot)
         {
-            var list = GetAll();
+            try
+            {
+                var list = GetAll();
 
-            spot.Id = list.Any() ? list.Max(x => x.Id) + 1 : 1;
+                spot.Id = list.Any() ? list.Max(x => x.Id) + 1 : 1;
 
-            var line = $"{spot.Id},{spot.Name},{spot.PricePerHour},{spot.IsAvailable}";
-            File.AppendAllText(_filePath, line + Environment.NewLine);
+                var line = $"{spot.Id},{spot.Name},{spot.PricePerHour},{spot.IsAvailable}";
+                File.AppendAllText(_filePath, line + Environment.NewLine);
+            }
+            catch
+            {
+                Console.WriteLine("Gabim gjatë shtimit.");
+            }
         }
 
         public void Save(List<ParkingSpot> list)
         {
-            var lines = list.Select(x => $"{x.Id},{x.Name},{x.PricePerHour},{x.IsAvailable}");
-            File.WriteAllLines(_filePath, lines);
+            try
+            {
+                var lines = list.Select(x => $"{x.Id},{x.Name},{x.PricePerHour},{x.IsAvailable}");
+                File.WriteAllLines(_filePath, lines);
+            }
+            catch
+            {
+                Console.WriteLine("Gabim gjatë ruajtjes.");
+            }
         }
 
         public void Delete(int id)
         {
-            var list = GetAll();
-            list = list.Where(x => x.Id != id).ToList();
-            Save(list);
+            try
+            {
+                var list = GetAll();
+                list = list.Where(x => x.Id != id).ToList();
+                Save(list);
+            }
+            catch
+            {
+                Console.WriteLine("Gabim gjatë fshirjes.");
+            }
         }
 
         public void Update(ParkingSpot updated)
         {
-            var list = GetAll();
-
-            var existing = list.FirstOrDefault(x => x.Id == updated.Id);
-
-            if (existing != null)
+            try
             {
-                existing.Name = updated.Name;
-                existing.PricePerHour = updated.PricePerHour;
-                existing.IsAvailable = updated.IsAvailable;
+                var list = GetAll();
 
-                Save(list);
+                var existing = list.FirstOrDefault(x => x.Id == updated.Id);
+
+                if (existing != null)
+                {
+                    existing.Name = updated.Name;
+                    existing.PricePerHour = updated.PricePerHour;
+                    existing.IsAvailable = updated.IsAvailable;
+
+                    Save(list);
+                }
+                else
+                {
+                    Console.WriteLine("Item nuk u gjet për update.");
+                }
+            }
+            catch
+            {
+                Console.WriteLine("Gabim gjatë update.");
             }
         }
     }
