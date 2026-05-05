@@ -30,8 +30,15 @@ class Program
                 {
                     case "1":
                         var list = service.List();
-                        foreach (var s in list)
-                            Console.WriteLine($"{s.Id} - {s.Name} - {s.PricePerHour}€ - Available: {s.IsAvailable}");
+                        if (list.Count == 0)
+                        {
+                            Console.WriteLine("Nuk ka parkingje.");
+                        }
+                        else
+                        {
+                            foreach (var s in list)
+                                Console.WriteLine($"{s.Id} - {s.Name} - {s.PricePerHour}€ - Available: {s.IsAvailable}");
+                        }
                         break;
 
                     case "2":
@@ -53,7 +60,7 @@ class Program
                         };
 
                         service.Add(spot);
-                        Console.WriteLine("Added!");
+                        Console.WriteLine("Parking u shtua me sukses!");
                         break;
 
                     case "3":
@@ -66,14 +73,7 @@ class Program
 
                         var found = service.GetById(id);
 
-                        if (found == null)
-                        {
-                            Console.WriteLine("Item nuk u gjet.");
-                        }
-                        else
-                        {
-                            Console.WriteLine($"{found.Id} - {found.Name} - {found.PricePerHour}€ - Available: {found.IsAvailable}");
-                        }
+                        Console.WriteLine($"{found.Id} - {found.Name} - {found.PricePerHour}€ - Available: {found.IsAvailable}");
                         break;
 
                     case "4":
@@ -85,7 +85,7 @@ class Program
                         }
 
                         service.Delete(delId);
-                        Console.WriteLine("Deleted!");
+                        Console.WriteLine("Parking u fshi me sukses!");
                         break;
 
                     case "5":
@@ -97,12 +97,6 @@ class Program
                         }
 
                         var existing = service.GetById(updateId);
-
-                        if (existing == null)
-                        {
-                            Console.WriteLine("Item nuk u gjet!");
-                            break;
-                        }
 
                         Console.Write("New Name: ");
                         var newName = Console.ReadLine();
@@ -130,7 +124,7 @@ class Program
                         };
 
                         service.Update(updatedSpot);
-                        Console.WriteLine("Updated!");
+                        Console.WriteLine("Parking u përditësua me sukses!");
                         break;
 
                     case "6":

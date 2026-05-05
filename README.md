@@ -2,141 +2,51 @@
 
 ## 📌 Përshkrimi
 
-Smart Parking Management System është një aplikacion full-stack për menaxhimin e një parkingu. Sistemi mundëson regjistrimin e hyrjes dhe daljes së veturave, llogaritjen automatike të pagesës dhe monitorimin në kohë reale të vendeve të parkingut.
+Smart Parking Management System është një aplikacion për menaxhimin e parkingut. Sistemi mundëson krijimin, përditësimin, shfaqjen dhe fshirjen e vendeve të parkingut (CRUD), si dhe ruajtjen e të dhënave në file CSV.
 
-Ky projekt po zhvillohet gjatë një semestri për të demonstruar përdorimin e arkitekturës së shtresuar dhe praktikave moderne të zhvillimit.
-
----
-
-## 🎯 Funksionalitetet Kryesore
-
-### 🔴 Must Have
-
-* Login për Admin dhe Staff
-* Regjistrimi i hyrjes së veturës (Check-in)
-* Regjistrimi i daljes së veturës (Check-out)
-* Llogaritja automatike e pagesës
-* Shfaqja e vendeve të lira dhe të zëna
-
-### 🟠 Should Have
-
-* Raport ditor i të ardhurave
-
-### 🟡 Could Have
-
-* Grafik mujor i të ardhurave
+Ky projekt është zhvilluar si semester project për të demonstruar përdorimin e arkitekturës së shtresuar dhe praktikave moderne të zhvillimit të softuerit.
 
 ---
 
-## 👥 Rolet e Sistemit
+## 🎯 Problemi që zgjidh
 
-* **Admin**
+Në shumë parkingje menaxhimi bëhet manualisht, duke shkaktuar:
 
-  * Monitoron sistemin
-  * Shikon raporte dhe statistika
+- mungesë organizimi
+- humbje të të dhënave
+- vështirësi në menaxhim
 
-* **Staff**
+Ky sistem e automatizon këtë proces dhe e bën më të saktë dhe të lehtë.
 
-  * Regjistron hyrje/dalje të veturave
-  * Menaxhon pagesat
+---
+
+## 👥 Përdoruesit
+
+- Administratorët e parkingut
+- Punëtorët e parkingut
+- Bizneset që menaxhojnë parkingje
 
 ---
 
 ## ⚙️ Teknologjitë
 
-### Backend
-
-* ASP.NET Core Web API
-* C#
-
-### Frontend
-
-* HTML
-* CSS
-* JavaScript
-
-### Database
-
-* PostgreSQL
-
-### Arkitektura
-
-* Layered Architecture (Models, Services, Data, UI)
-* Repository Pattern
+- C#
+- .NET
+- ASP.NET Core
+- CSV File Storage
+- Layered Architecture
+- Repository Pattern
 
 ---
 
 ## 🏗️ Struktura e Projektit
 
-```
-/Models       -> Entitetet kryesore (User, ParkingSpot, ParkingSession)
-/Services     -> Logjika e biznesit
-/Data         -> Repository dhe menaxhimi i të dhënave
-/UI           -> Frontend (HTML, CSS, JS)
-/docs         -> Dokumentimi (UML, Architecture)
-```
-
----
-
-## 🧠 Arkitektura
-
-Projekti përdor arkitekturë me shtresa për të ndarë përgjegjësitë:
-
-* **Models** – përfaqësojnë të dhënat
-* **Services** – përmbajnë logjikën e biznesit
-* **Data** – menaxhon ruajtjen e të dhënave (Repository Pattern)
-* **UI** – ndërfaqja me përdoruesin
-
----
-
-## 📊 UML & Dokumentimi
-
-Dokumentimi gjendet në folderin `/docs`:
-
-* `class-diagram.md` – diagrami i klasave (UML)
-* `architecture.md` – përshkrimi i arkitekturës
-
----
-
-## 🔐 Parimet e Dizajnit
-
-Projekti ndjek parimin:
-
-* **Single Responsibility Principle (SOLID)**
-  Çdo klasë ka një përgjegjësi të vetme, duke e bërë kodin më të mirëmbajtshëm dhe të zgjerueshëm.
-
----
-
-## 🚀 Si të ekzekutohet projekti
-
-1. Klono repository:
-
-```
-git clone https://github.com/username/smart-parking-system.git
-```
-
-2. Hape projektin në Visual Studio
-
-3. Run aplikacionin:
-
-```
-dotnet run
-```
-
-4. Hape në browser:
-
-```
-https://localhost:xxxx/swagger
-```
-
----
-
-## 📌 Statusi i Projektit
-
-🟡 Në zhvillim (Semester Project)
-
----
-
-## 👨‍💻 Autori
-
-* Selma Avdiu
+```text
+/Models
+/Services
+/Data
+/UI
+/docs
+Controllers/
+Program.cs
+README.md

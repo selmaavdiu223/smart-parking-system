@@ -9,48 +9,52 @@ namespace SmartParkingSystem.Repositories
 
         public List<ParkingSpot> GetAll()
         {
+            var list = new List<ParkingSpot>();
+
             try
             {
                 if (!File.Exists(_filePath))
                 {
-                    Console.WriteLine("File nuk u gjet, po krijoj file të ri...");
                     File.Create(_filePath).Close();
-                    return new List<ParkingSpot>();
+                    return list;
                 }
 
                 var lines = File.ReadAllLines(_filePath);
 
-                return lines.Select(line =>
+                foreach (var line in lines)
                 {
-                    var parts = line.Split(',');
-
-                    return new ParkingSpot
+                    try
                     {
-                        Id = int.Parse(parts[0]),
-                        Name = parts[1],
-                        PricePerHour = double.Parse(parts[2], CultureInfo.InvariantCulture),
-                        IsAvailable = bool.Parse(parts[3])
-                    };
-                }).ToList();
+                        var parts = line.Split(',');
+
+                        if (parts.Length < 4)
+                            continue;
+
+                        list.Add(new ParkingSpot
+                        {
+                            Id = int.Parse(parts[0]),
+                            Name = parts[1],
+                            PricePerHour = double.Parse(parts[2], CultureInfo.InvariantCulture),
+                            IsAvailable = bool.Parse(parts[3])
+                        });
+                    }
+                    catch
+                    {
+                        Console.WriteLine("Rresht i pavlefshëm në file u injorua.");
+                    }
+                }
             }
-            catch
+            catch (Exception ex)
             {
-                Console.WriteLine("Gabim gjatë leximit të file.");
-                return new List<ParkingSpot>();
+                Console.WriteLine("Gabim gjatë leximit të file: " + ex.Message);
             }
+
+            return list;
         }
 
         public ParkingSpot? GetById(int id)
         {
-            try
-            {
-                return GetAll().FirstOrDefault(x => x.Id == id);
-            }
-            catch
-            {
-                Console.WriteLine("Gabim gjatë kërkimit me ID.");
-                return null;
-            }
+            return GetAll().FirstOrDefault(x => x.Id == id);
         }
 
         public void Add(ParkingSpot spot)
@@ -59,14 +63,15 @@ namespace SmartParkingSystem.Repositories
             {
                 var list = GetAll();
 
+                // ID auto-increment
                 spot.Id = list.Any() ? list.Max(x => x.Id) + 1 : 1;
 
-                var line = $"{spot.Id},{spot.Name},{spot.PricePerHour},{spot.IsAvailable}";
+                var line = $"{spot.Id},{spot.Name},{spot.PricePerHour.ToString(CultureInfo.InvariantCulture)},{spot.IsAvailable}";
                 File.AppendAllText(_filePath, line + Environment.NewLine);
             }
-            catch
+            catch (Exception ex)
             {
-                Console.WriteLine("Gabim gjatë shtimit.");
+                Console.WriteLine("Gabim gjatë shtimit: " + ex.Message);
             }
         }
 
@@ -74,12 +79,15 @@ namespace SmartParkingSystem.Repositories
         {
             try
             {
-                var lines = list.Select(x => $"{x.Id},{x.Name},{x.PricePerHour},{x.IsAvailable}");
+                var lines = list.Select(x =>
+                    $"{x.Id},{x.Name},{x.PricePerHour.ToString(CultureInfo.InvariantCulture)},{x.IsAvailable}"
+                );
+
                 File.WriteAllLines(_filePath, lines);
             }
-            catch
+            catch (Exception ex)
             {
-                Console.WriteLine("Gabim gjatë ruajtjes.");
+                Console.WriteLine("Gabim gjatë ruajtjes: " + ex.Message);
             }
         }
 
@@ -88,12 +96,19 @@ namespace SmartParkingSystem.Repositories
             try
             {
                 var list = GetAll();
-                list = list.Where(x => x.Id != id).ToList();
-                Save(list);
+                var newList = list.Where(x => x.Id != id).ToList();
+
+                if (list.Count == newList.Count)
+                {
+                    Console.WriteLine("Parking nuk u gjet për fshirje.");
+                    return;
+                }
+
+                Save(newList);
             }
-            catch
+            catch (Exception ex)
             {
-                Console.WriteLine("Gabim gjatë fshirjes.");
+                Console.WriteLine("Gabim gjatë fshirjes: " + ex.Message);
             }
         }
 
@@ -105,22 +120,21 @@ namespace SmartParkingSystem.Repositories
 
                 var existing = list.FirstOrDefault(x => x.Id == updated.Id);
 
-                if (existing != null)
+                if (existing == null)
                 {
-                    existing.Name = updated.Name;
-                    existing.PricePerHour = updated.PricePerHour;
-                    existing.IsAvailable = updated.IsAvailable;
+                    Console.WriteLine("Parking nuk u gjet për update.");
+                    return;
+                }
 
-                    Save(list);
-                }
-                else
-                {
-                    Console.WriteLine("Item nuk u gjet për update.");
-                }
+                existing.Name = updated.Name;
+                existing.PricePerHour = updated.PricePerHour;
+                existing.IsAvailable = updated.IsAvailable;
+
+                Save(list);
             }
-            catch
+            catch (Exception ex)
             {
-                Console.WriteLine("Gabim gjatë update.");
+                Console.WriteLine("Gabim gjatë update: " + ex.Message);
             }
         }
     }

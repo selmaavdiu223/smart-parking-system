@@ -14,104 +14,92 @@ namespace SmartParkingSystem.Services
 
         public List<ParkingSpot> List(string? nameFilter = null)
         {
-            try
+            var data = _repo.GetAll();
+
+            if (!string.IsNullOrWhiteSpace(nameFilter))
             {
-                var data = _repo.GetAll();
-
-                if (!string.IsNullOrEmpty(nameFilter))
-                {
-                    data = data.Where(x => x.Name.ToLower().Contains(nameFilter.ToLower())).ToList();
-                }
-
-                return data;
-            }
-            catch
-            {
-                Console.WriteLine("Gabim gjatë listimit.");
-                return new List<ParkingSpot>();
-            }
-        }
-
-        // ✅ FEATURE E RE (Search)
-        public List<ParkingSpot> SearchByName(string name)
-        {
-            try
-            {
-                var data = _repo.GetAll();
-
-                if (string.IsNullOrWhiteSpace(name))
-                    return new List<ParkingSpot>();
-
-                return data
-                    .Where(x => x.Name.ToLower().Contains(name.ToLower()))
+                data = data
+                    .Where(x => x.Name.ToLower().Contains(nameFilter.ToLower()))
                     .ToList();
             }
-            catch
-            {
-                Console.WriteLine("Gabim gjatë kërkimit.");
-                return new List<ParkingSpot>();
-            }
+
+            return data;
         }
 
+        // Search
+        public List<ParkingSpot> SearchByName(string name)
+        {
+            if (string.IsNullOrWhiteSpace(name))
+                throw new Exception("Emri për kërkim nuk mund të jetë bosh");
+
+            var data = _repo.GetAll();
+
+            return data
+                .Where(x => x.Name.ToLower().Contains(name.ToLower()))
+                .ToList();
+        }
+
+        // ✅ VALIDIM I PËRMIRËSUAR
         public void Add(ParkingSpot spot)
         {
-            try
-            {
-                if (string.IsNullOrWhiteSpace(spot.Name))
-                    throw new Exception("Name nuk mund te jete bosh");
+            if (spot.Id <= 0)
+                throw new Exception("ID duhet të jetë më i madh se 0");
 
-                if (spot.PricePerHour <= 0)
-                    throw new Exception("Price duhet > 0");
+            if (string.IsNullOrWhiteSpace(spot.Name))
+                throw new Exception("Emri nuk mund të jetë bosh");
 
-                _repo.Add(spot);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-            }
+            if (spot.PricePerHour <= 0)
+                throw new Exception("Çmimi duhet të jetë më i madh se 0");
+
+            // kontroll ID unike
+            var existing = _repo.GetAll().FirstOrDefault(x => x.Id == spot.Id);
+            if (existing != null)
+                throw new Exception("Ekziston parking me këtë ID");
+
+            _repo.Add(spot);
         }
 
         public ParkingSpot? GetById(int id)
         {
-            try
-            {
-                return _repo.GetById(id);
-            }
-            catch
-            {
-                Console.WriteLine("Gabim gjatë kërkimit me ID.");
-                return null;
-            }
+            if (id <= 0)
+                throw new Exception("ID duhet të jetë më i madh se 0");
+
+            var spot = _repo.GetById(id);
+
+            if (spot == null)
+                throw new Exception("Parking nuk u gjet");
+
+            return spot;
         }
 
         public void Delete(int id)
         {
-            try
-            {
-                _repo.Delete(id);
-            }
-            catch
-            {
-                Console.WriteLine("Gabim gjatë fshirjes.");
-            }
+            if (id <= 0)
+                throw new Exception("ID duhet të jetë më i madh se 0");
+
+            var existing = _repo.GetById(id);
+            if (existing == null)
+                throw new Exception("Parking nuk ekziston");
+
+            _repo.Delete(id);
         }
 
         public void Update(ParkingSpot spot)
         {
-            try
-            {
-                if (string.IsNullOrWhiteSpace(spot.Name))
-                    throw new Exception("Name nuk mund te jete bosh");
+            if (spot.Id <= 0)
+                throw new Exception("ID duhet të jetë më i madh se 0");
 
-                if (spot.PricePerHour <= 0)
-                    throw new Exception("Price duhet > 0");
+            if (string.IsNullOrWhiteSpace(spot.Name))
+                throw new Exception("Emri nuk mund të jetë bosh");
 
-                _repo.Update(spot);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-            }
+            if (spot.PricePerHour <= 0)
+                throw new Exception("Çmimi duhet të jetë më i madh se 0");
+
+            var existing = _repo.GetById(spot.Id);
+            if (existing == null)
+                throw new Exception("Parking nuk ekziston");
+
+            _repo.Update(spot);
         }
     }
 }
