@@ -7,20 +7,22 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="SmartParkingWebAPI\**" />
+    <Compile Remove="SmartParkingSytem.Tests\**" />
+    <Compile Remove="smart_parking_system\**" />
+    <Content Remove="SmartParkingWebAPI\**" />
+    <Content Remove="SmartParkingSytem.Tests\**" />
+    <Content Remove="smart_parking_system\**" />
+    <EmbeddedResource Remove="SmartParkingWebAPI\**" />
+    <EmbeddedResource Remove="SmartParkingSytem.Tests\**" />
+    <EmbeddedResource Remove="smart_parking_system\**" />
+    <None Remove="SmartParkingWebAPI\**" />
+    <None Remove="SmartParkingSytem.Tests\**" />
+    <None Remove="smart_parking_system\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
-    <PackageReference Include="xunit.abstractions" Version="2.0.3" />
-    <PackageReference Include="xunit.assert" Version="2.9.3" />
-    <PackageReference Include="xunit.extensibility.core" Version="2.9.3" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Update="Data\parkings.csv">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Controllers\" />
   </ItemGroup>
 
 </Project>

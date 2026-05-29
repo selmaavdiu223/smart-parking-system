@@ -1,6 +1,8 @@
 1,Parking A,2.5,True
 2,Parking B,3,True
 3,Parking C,1.5,False
-5,Parking D,1.8,True
-6,Parking F,2.5,True
-7,Parking D,1.8,True
+4,Parking D,2,True
+5,Parking E,4,False
+6,Parking F,4,True
+7,Parking H,2.5,True
+8,Parking G,2,True

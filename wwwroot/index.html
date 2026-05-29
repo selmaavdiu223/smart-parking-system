@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="sq">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Parking</title>
+    <script>
+        if (!localStorage.getItem("smartParkingUser")) {
+            window.location.replace("login.html");
+        }
+    </script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header class="topbar">
+        <div>
+            <p class="eyebrow">Smart Parking</p>
+            <h1>Menaxhimi i Parkingut</h1>
+            <p class="topbar-subtitle">Dashboard per monitorim, hyrje/dalje dhe menaxhim te vendeve te parkimit.</p>
+        </div>
+        <div class="top-actions">
+            <span id="currentUser">Nuk je kycur</span>
+            <a id="loginNav" href="login.html" class="ghost-link">Login</a>
+            <a id="registerNav" href="register.html" class="ghost-link">Register</a>
+            <button id="logoutButton" class="ghost-button" hidden>Dil</button>
+            <a href="/swagger" class="ghost-link">Swagger</a>
+        </div>
+    </header>
+
+    <main class="page">
+        <section class="stats-grid">
+            <article>
+                <span id="totalCount">0</span>
+                <p>Total parkingje</p>
+            </article>
+            <article>
+                <span id="availableCount">0</span>
+                <p>Te lira</p>
+            </article>
+            <article>
+                <span id="occupiedCount">0</span>
+                <p>Te zena</p>
+            </article>
+            <article>
+                <span id="activeSessionCount">0</span>
+                <p>Sesione aktive</p>
+            </article>
+        </section>
+
+        <section class="availability-grid">
+            <article class="panel compact-panel">
+                <div>
+                    <p class="eyebrow">Te lira</p>
+                    <h2>Parkingje te disponueshme</h2>
+                </div>
+                <div id="availableList" class="spot-list"></div>
+            </article>
+
+            <article class="panel compact-panel">
+                <div>
+                    <p class="eyebrow">Te zena</p>
+                    <h2>Parkingje te zena</h2>
+                </div>
+                <div id="occupiedList" class="spot-list"></div>
+            </article>
+        </section>
+
+        <section class="grid-two">
+            <section class="panel" data-admin-only>
+                <div>
+                    <p class="eyebrow">Parkingje</p>
+                    <h2 id="parkingFormTitle">Shto parking</h2>
+                </div>
+
+                <form id="parkingForm">
+                    <input type="hidden" id="spotId">
+                    <label for="spotName">Emri i parkingut</label>
+                    <input id="spotName" type="text" placeholder="P.sh. Parking A" required>
+
+                    <label for="pricePerHour">Cmimi per ore</label>
+                    <input id="pricePerHour" type="number" min="0.01" max="1000" step="0.01" placeholder="2.50" required>
+
+                    <label class="check-row">
+                        <input id="isAvailable" type="checkbox" checked>
+                        I lire
+                    </label>
+
+                    <div class="button-row">
+                        <button type="submit" id="submitButton">Shto</button>
+                        <button type="button" id="cancelEditButton" class="secondary-button" hidden>Anulo</button>
+                    </div>
+                </form>
+            </section>
+
+            <section class="panel">
+                <div>
+                    <p class="eyebrow">Hyrje / Dalje</p>
+                    <h2>Sesione parkimi</h2>
+                </div>
+
+                <form id="sessionForm">
+                    <label for="sessionSpotId">Parkingu i lire</label>
+                    <select id="sessionSpotId" required>
+                        <option value="">Zgjidh parkingun</option>
+                    </select>
+
+                    <label for="vehiclePlate">Targa</label>
+                    <input id="vehiclePlate" type="text" maxlength="20" placeholder="P.sh. 01-ABC-123" required>
+
+                    <button type="submit">Regjistro hyrjen</button>
+                </form>
+            </section>
+        </section>
+
+        <p id="message" class="message" role="status"></p>
+
+        <section class="panel">
+            <div class="table-header">
+                <div>
+                    <p class="eyebrow">Lista</p>
+                    <h2>Parkingjet</h2>
+                </div>
+                <div class="filters">
+                    <input id="searchInput" type="search" placeholder="Kerko sipas emrit">
+                    <select id="statusFilter">
+                        <option value="all">Te gjitha</option>
+                        <option value="available">Te lira</option>
+                        <option value="occupied">Te zena</option>
+                    </select>
+                    <button id="refreshButton" type="button" class="secondary-button">Refresh</button>
+                </div>
+            </div>
+
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Emri</th>
+                            <th>Cmimi</th>
+                            <th>Statusi</th>
+                            <th data-admin-only>Veprime</th>
+                        </tr>
+                    </thead>
+                    <tbody id="parkingTableBody"></tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="panel">
+            <div class="table-header">
+                <div>
+                    <p class="eyebrow">Historiku</p>
+                    <h2>Sesione parkimi</h2>
+                </div>
+            </div>
+
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Parking ID</th>
+                            <th>Targa</th>
+                            <th>Hyrja</th>
+                            <th>Dalja</th>
+                            <th>Pagesa</th>
+                            <th>Veprime</th>
+                        </tr>
+                    </thead>
+                    <tbody id="sessionsTableBody"></tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
+    <script src="js/app.js"></script>
+</body>
+</html>

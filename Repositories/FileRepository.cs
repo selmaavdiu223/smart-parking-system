@@ -1,11 +1,19 @@
-﻿using SmartParkingSystem.Models;
 using System.Globalization;
+using SmartParkingSystem.Models;
+using SmartParkingSystem.Utils;
 
 namespace SmartParkingSystem.Repositories
 {
     public class FileRepository
     {
-        private readonly string _filePath = "data.csv";
+        private readonly string _filePath;
+        private readonly bool _seedDefaultParkings;
+
+        public FileRepository(string filePath = "data.csv")
+        {
+            _filePath = filePath;
+            _seedDefaultParkings = false;
+        }
 
         public List<ParkingSpot> GetAll()
         {
@@ -13,11 +21,7 @@ namespace SmartParkingSystem.Repositories
 
             try
             {
-                if (!File.Exists(_filePath))
-                {
-                    File.Create(_filePath).Close();
-                    return list;
-                }
+                EnsureFile();
 
                 var lines = File.ReadAllLines(_filePath);
 
@@ -25,9 +29,9 @@ namespace SmartParkingSystem.Repositories
                 {
                     try
                     {
-                        var parts = line.Split(',');
+                        var parts = CsvUtils.ParseLine(line);
 
-                        if (parts.Length < 4)
+                        if (parts.Count < 4)
                             continue;
 
                         list.Add(new ParkingSpot
@@ -40,13 +44,13 @@ namespace SmartParkingSystem.Repositories
                     }
                     catch
                     {
-                        Console.WriteLine("Rresht i pavlefshëm në file u injorua.");
+                        Console.WriteLine("Rresht i pavlefshem ne file u injorua.");
                     }
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Gabim gjatë leximit të file: " + ex.Message);
+                Console.WriteLine("Gabim gjate leximit te file: " + ex.Message);
             }
 
             return list;
@@ -63,15 +67,20 @@ namespace SmartParkingSystem.Repositories
             {
                 var list = GetAll();
 
-                // ID auto-increment
                 spot.Id = list.Any() ? list.Max(x => x.Id) + 1 : 1;
 
-                var line = $"{spot.Id},{spot.Name},{spot.PricePerHour.ToString(CultureInfo.InvariantCulture)},{spot.IsAvailable}";
+                var line = CsvUtils.ToLine(
+                    spot.Id,
+                    spot.Name,
+                    spot.PricePerHour.ToString(CultureInfo.InvariantCulture),
+                    spot.IsAvailable);
+
+                EnsureDirectory();
                 File.AppendAllText(_filePath, line + Environment.NewLine);
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Gabim gjatë shtimit: " + ex.Message);
+                Console.WriteLine("Gabim gjate shtimit: " + ex.Message);
             }
         }
 
@@ -80,14 +89,19 @@ namespace SmartParkingSystem.Repositories
             try
             {
                 var lines = list.Select(x =>
-                    $"{x.Id},{x.Name},{x.PricePerHour.ToString(CultureInfo.InvariantCulture)},{x.IsAvailable}"
+                    CsvUtils.ToLine(
+                        x.Id,
+                        x.Name,
+                        x.PricePerHour.ToString(CultureInfo.InvariantCulture),
+                        x.IsAvailable)
                 );
 
+                EnsureDirectory();
                 File.WriteAllLines(_filePath, lines);
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Gabim gjatë ruajtjes: " + ex.Message);
+                Console.WriteLine("Gabim gjate ruajtjes: " + ex.Message);
             }
         }
 
@@ -100,7 +114,7 @@ namespace SmartParkingSystem.Repositories
 
                 if (list.Count == newList.Count)
                 {
-                    Console.WriteLine("Parking nuk u gjet për fshirje.");
+                    Console.WriteLine("Parking nuk u gjet per fshirje.");
                     return;
                 }
 
@@ -108,7 +122,7 @@ namespace SmartParkingSystem.Repositories
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Gabim gjatë fshirjes: " + ex.Message);
+                Console.WriteLine("Gabim gjate fshirjes: " + ex.Message);
             }
         }
 
@@ -122,7 +136,7 @@ namespace SmartParkingSystem.Repositories
 
                 if (existing == null)
                 {
-                    Console.WriteLine("Parking nuk u gjet për update.");
+                    Console.WriteLine("Parking nuk u gjet per update.");
                     return;
                 }
 
@@ -134,8 +148,33 @@ namespace SmartParkingSystem.Repositories
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Gabim gjatë update: " + ex.Message);
+                Console.WriteLine("Gabim gjate update: " + ex.Message);
             }
+        }
+
+        private void EnsureDirectory()
+        {
+            var directory = Path.GetDirectoryName(_filePath);
+
+            if (!string.IsNullOrWhiteSpace(directory))
+                Directory.CreateDirectory(directory);
+        }
+
+        private void EnsureFile()
+        {
+            EnsureDirectory();
+
+            if (File.Exists(_filePath) && new FileInfo(_filePath).Length > 0)
+                return;
+
+            if (_seedDefaultParkings && File.Exists("data.csv"))
+            {
+                File.Copy("data.csv", _filePath, overwrite: true);
+                return;
+            }
+
+            if (!File.Exists(_filePath))
+                File.Create(_filePath).Close();
         }
     }
 }

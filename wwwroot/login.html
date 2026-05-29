@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="sq">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | Smart Parking</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header class="topbar">
+        <div>
+            <p class="eyebrow">Smart Parking</p>
+            <h1>Login</h1>
+        </div>
+        <div class="top-actions">
+            <a id="registerNav" href="register.html" class="ghost-link">Register</a>
+        </div>
+    </header>
+
+    <main class="page auth-page">
+        <section class="panel auth-card">
+            <div>
+                <p class="eyebrow">Llogaria</p>
+                <h2>Kycu ne sistem</h2>
+            </div>
+
+            <form id="loginForm" autocomplete="off">
+                <label for="loginEmail">Email</label>
+                <input id="loginEmail" type="email" name="smart-parking-login-email" autocomplete="off" placeholder="email@example.com" required>
+
+                <label for="loginPassword">Password</label>
+                <input id="loginPassword" type="password" name="smart-parking-login-password" autocomplete="new-password" minlength="4" placeholder="Password" required>
+
+                <button type="submit">Kycu</button>
+            </form>
+
+            <p class="auth-switch">
+                Nuk ke llogari? <a href="register.html">Regjistrohu</a>
+            </p>
+        </section>
+
+        <p id="message" class="message" role="status"></p>
+    </main>
+
+    <script src="js/app.js"></script>
+</body>
+</html>

@@ -26,43 +26,41 @@ namespace SmartParkingSystem.Services
             return data;
         }
 
-        // Search
         public List<ParkingSpot> SearchByName(string name)
         {
             if (string.IsNullOrWhiteSpace(name))
-                throw new Exception("Emri për kërkim nuk mund të jetë bosh");
+                throw new Exception("Emri per kerkim nuk mund te jete bosh");
 
-            var data = _repo.GetAll();
-
-            return data
+            return _repo.GetAll()
                 .Where(x => x.Name.ToLower().Contains(name.ToLower()))
                 .ToList();
         }
 
-        // ✅ VALIDIM I PËRMIRËSUAR
         public void Add(ParkingSpot spot)
         {
-            if (spot.Id <= 0)
-                throw new Exception("ID duhet të jetë më i madh se 0");
-
             if (string.IsNullOrWhiteSpace(spot.Name))
-                throw new Exception("Emri nuk mund të jetë bosh");
+                throw new Exception("Emri nuk mund te jete bosh");
 
             if (spot.PricePerHour <= 0)
-                throw new Exception("Çmimi duhet të jetë më i madh se 0");
+                throw new Exception("Cmimi duhet te jete me i madh se 0");
 
-            // kontroll ID unike
-            var existing = _repo.GetAll().FirstOrDefault(x => x.Id == spot.Id);
+            var existing = _repo.GetAll()
+                .FirstOrDefault(x => x.Name.Equals(spot.Name.Trim(), StringComparison.OrdinalIgnoreCase));
+
             if (existing != null)
-                throw new Exception("Ekziston parking me këtë ID");
+            {
+                var status = existing.IsAvailable ? "i lire" : "i zene";
+                throw new Exception($"Parkingu {existing.Name} ekziston dhe eshte {status}. Nuk mund te shtohet perseri.");
+            }
 
+            spot.Name = spot.Name.Trim();
             _repo.Add(spot);
         }
 
-        public ParkingSpot? GetById(int id)
+        public ParkingSpot GetById(int id)
         {
             if (id <= 0)
-                throw new Exception("ID duhet të jetë më i madh se 0");
+                throw new Exception("ID duhet te jete me i madh se 0");
 
             var spot = _repo.GetById(id);
 
@@ -75,9 +73,10 @@ namespace SmartParkingSystem.Services
         public void Delete(int id)
         {
             if (id <= 0)
-                throw new Exception("ID duhet të jetë më i madh se 0");
+                throw new Exception("ID duhet te jete me i madh se 0");
 
             var existing = _repo.GetById(id);
+
             if (existing == null)
                 throw new Exception("Parking nuk ekziston");
 
@@ -87,18 +86,28 @@ namespace SmartParkingSystem.Services
         public void Update(ParkingSpot spot)
         {
             if (spot.Id <= 0)
-                throw new Exception("ID duhet të jetë më i madh se 0");
+                throw new Exception("ID duhet te jete me i madh se 0");
 
             if (string.IsNullOrWhiteSpace(spot.Name))
-                throw new Exception("Emri nuk mund të jetë bosh");
+                throw new Exception("Emri nuk mund te jete bosh");
 
             if (spot.PricePerHour <= 0)
-                throw new Exception("Çmimi duhet të jetë më i madh se 0");
+                throw new Exception("Cmimi duhet te jete me i madh se 0");
 
             var existing = _repo.GetById(spot.Id);
+
             if (existing == null)
                 throw new Exception("Parking nuk ekziston");
 
+            var duplicate = _repo.GetAll()
+                .FirstOrDefault(x =>
+                    x.Id != spot.Id &&
+                    x.Name.Equals(spot.Name.Trim(), StringComparison.OrdinalIgnoreCase));
+
+            if (duplicate != null)
+                throw new Exception($"Parkingu {duplicate.Name} ekziston tashme");
+
+            spot.Name = spot.Name.Trim();
             _repo.Update(spot);
         }
     }

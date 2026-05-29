@@ -5,3 +5,8 @@ obj/
 *.suo
 node_modules/
 .env
+App_Data/
+build-check/
+server-*.log
+sessions.csv
+users.csv
